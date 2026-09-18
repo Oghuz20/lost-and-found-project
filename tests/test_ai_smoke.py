@@ -203,7 +203,7 @@ def test_schema_has_required_fields():
 
 def test_item_description_rejects_extra_fields():
     """Pydantic ConfigDict(extra='forbid') enforces the schema contract."""
-    with pytest.raises(Exception):  # pydantic.ValidationError
+    with pytest.raises(Exception):  # noqa: B017
         ItemDescription(
             object_class="phone",
             colors=["black"],

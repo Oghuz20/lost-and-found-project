@@ -50,19 +50,22 @@ async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
     store = BlobStore(settings)
 
     try:
-        with open(image_path, "rb") as fh:
-            data = fh.read()
+
+        def _read_and_save() -> str:
+            with open(image_path, "rb") as fh:
+                raw_data = fh.read()
+            saved_blob = store.save(raw_data, original_filename=image_path)
+            return str(saved_blob.path)
+
+        blob_path = await asyncio.to_thread(_read_and_save)
     except OSError as exc:
         print(f"error: could not read {image_path!r}: {exc}", file=sys.stderr)
         raise SystemExit(1)
-
-    try:
-        blob = store.save(data, original_filename=image_path)
     except BlobValidationError as exc:
         print(f"error: {exc}", file=sys.stderr)
         raise SystemExit(1)
 
-    desc = describe_item(str(blob.path), text)
+    desc = describe_item(blob_path, text)
     vec = embed(desc.to_search_text())
 
     pool = await get_pool(settings)
@@ -71,7 +74,7 @@ async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
     item = Item(
         status=kind,
         user_text=text,
-        image_path=str(blob.path),
+        image_path=blob_path,
         vlm_description=desc.to_dict(),
         embedding=Item.pack_embedding(vec),
     )

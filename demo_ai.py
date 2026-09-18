@@ -131,7 +131,7 @@ def run_demo(offline: bool) -> None:
                 vec = embed(desc.to_search_text(), embedder=embedder)
                 out.append((img.name, vec, desc.to_search_text()))
                 print(f"  - {img.name}: {desc.object_class} ({desc.confidence:.2f})")
-            except Exception as e: # noqa: BLE001
+            except Exception as e:  # noqa: BLE001
                 print(f"  ! {img.name} failed: {e}", file=sys.stderr)
         return out
 
