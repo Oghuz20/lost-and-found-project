@@ -84,7 +84,7 @@ class FakePool:
         rows.sort(key=lambda r: r["created_at"], reverse=True)
         return [_FakeRecord(r) for r in rows]
 
-    def acquire(self) -> "_AcquireCtx":
+    def acquire(self) -> _AcquireCtx:
         return _AcquireCtx(self)
 
     async def execute(self, ddl: str) -> None:
@@ -117,7 +117,11 @@ def _lost_item(**overrides: Any) -> Item:
         status=ItemStatus.LOST,
         user_text="black umbrella near the library",
         image_path="/data/blobs/abc.png",
-        vlm_description={"object_class": "umbrella", "colors": ["black"], "confidence": 0.8},
+        vlm_description={
+            "object_class": "umbrella",
+            "colors": ["black"],
+            "confidence": 0.8,
+        },
         embedding=Item.pack_embedding(np.zeros(4, dtype=np.float32)),
     )
     defaults.update(overrides)
@@ -165,7 +169,9 @@ async def test_save_match(repo: ItemRepository) -> None:
     assert a.id is not None and b.id is not None
 
     match = await repo.save_match(
-        MatchRecord(lost_item_id=a.id, found_item_id=b.id, score=0.91, reason="same brand+color")
+        MatchRecord(
+            lost_item_id=a.id, found_item_id=b.id, score=0.91, reason="same brand+color"
+        )
     )
     assert match.id == 1
     assert match.score == pytest.approx(0.91)
@@ -182,7 +188,9 @@ async def test_init_schema_executes_ddl_against_pool(pool: FakePool) -> None:
     assert "matches" in pool.executed_sql[0]
 
 
-async def test_get_pool_creates_once_and_caches(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_get_pool_creates_once_and_caches(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     from src.storage import db
 
     created = []
@@ -191,7 +199,9 @@ async def test_get_pool_creates_once_and_caches(monkeypatch: pytest.MonkeyPatch)
         async def close(self) -> None:
             pass
 
-    async def _fake_create_pool(dsn: str, min_size: int, max_size: int) -> _FakeAsyncpgPool:
+    async def _fake_create_pool(
+        dsn: str, min_size: int, max_size: int
+    ) -> _FakeAsyncpgPool:
         created.append(dsn)
         return _FakeAsyncpgPool()
 
@@ -200,7 +210,9 @@ async def test_get_pool_creates_once_and_caches(monkeypatch: pytest.MonkeyPatch)
 
     from src.config import Settings
 
-    settings = Settings(_env_file=None, database_url="postgresql+asyncpg://u:p@h:5432/d")
+    settings = Settings(
+        _env_file=None, database_url="postgresql+asyncpg://u:p@h:5432/d"
+    )
 
     first = await db.get_pool(settings)
     second = await db.get_pool(settings)

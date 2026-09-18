@@ -35,7 +35,9 @@ async def get_pool(settings: Settings | None = None) -> asyncpg.Pool:
     async with _pool_lock:
         if _pool is None:
             settings = settings or get_settings()
-            _pool = await asyncpg.create_pool(dsn=settings.asyncpg_dsn, min_size=1, max_size=10)
+            _pool = await asyncpg.create_pool(
+                dsn=settings.asyncpg_dsn, min_size=1, max_size=10
+            )
     return _pool
 
 
@@ -47,7 +49,9 @@ async def close_pool() -> None:
         _pool = None
 
 
-async def init_schema(pool: asyncpg.Pool | None = None, settings: Settings | None = None) -> None:
+async def init_schema(
+    pool: asyncpg.Pool | None = None, settings: Settings | None = None
+) -> None:
     """Idempotently create tables/indexes. Safe to call on every startup.
 
     `pool` can be passed explicitly (tests do this with a fake pool);

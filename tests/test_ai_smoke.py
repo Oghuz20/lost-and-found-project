@@ -9,16 +9,13 @@ Add your own tests in tests/test_*.py — these stay as-is.
 
 from __future__ import annotations
 
-import json
-
 import numpy as np
 import pytest
 
-from ai import describe_item, embed, cosine, top_k, ItemDescription, MatchResult
+from ai import ItemDescription, MatchResult, cosine, describe_item, embed, top_k
 from ai.providers.base import ProviderError
-from ai.vlm import _parse_json
 from ai.schemas import ITEM_DESCRIPTION_SCHEMA
-
+from ai.vlm import _parse_json
 
 # --- describe_item ---------------------------------------------------------
 
@@ -197,13 +194,19 @@ def test_top_k_dimension_mismatch_raises():
 
 
 def test_schema_has_required_fields():
-    assert ITEM_DESCRIPTION_SCHEMA["required"] == ["object_class", "colors", "confidence"]
+    assert ITEM_DESCRIPTION_SCHEMA["required"] == [
+        "object_class",
+        "colors",
+        "confidence",
+    ]
 
 
 def test_item_description_rejects_extra_fields():
     """Pydantic ConfigDict(extra='forbid') enforces the schema contract."""
     with pytest.raises(Exception):  # pydantic.ValidationError
         ItemDescription(
-            object_class="phone", colors=["black"], confidence=0.8,
+            object_class="phone",
+            colors=["black"],
+            confidence=0.8,
             totally_unknown_field=42,  # type: ignore[call-arg]
         )

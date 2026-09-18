@@ -88,7 +88,4 @@ def top_k(
     k = min(k, scores.shape[0])
     idx = np.argpartition(-scores, kth=k - 1)[:k]
     idx = idx[np.argsort(-scores[idx])]
-    return [
-        MatchResult(candidate_id=int(i), score=float(scores[i]))
-        for i in idx
-    ]
+    return [MatchResult(candidate_id=int(i), score=float(scores[i])) for i in idx]

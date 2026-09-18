@@ -41,7 +41,9 @@ class Item(BaseModel):
     # Packed via `Item.pack_embedding`; a raw float32 buffer, not base64,
     # to keep it compact in Postgres BYTEA.
     embedding: bytes | None = None
-    created_at: dt.datetime = Field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = Field(
+        default_factory=lambda: dt.datetime.now(dt.timezone.utc)
+    )
 
     def embedding_array(self) -> np.ndarray | None:
         """Unpack `embedding` back into the float32 vector `ai.embed` returned."""
@@ -69,7 +71,9 @@ class MatchRecord(BaseModel):
     found_item_id: int
     score: float
     reason: str = ""
-    created_at: dt.datetime = Field(default_factory=lambda: dt.datetime.now(dt.timezone.utc))
+    created_at: dt.datetime = Field(
+        default_factory=lambda: dt.datetime.now(dt.timezone.utc)
+    )
 
     def is_strong_match(self, threshold: float = 0.7) -> bool:
         """True if `score` clears a confidence threshold worth surfacing to a user."""

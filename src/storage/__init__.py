@@ -7,4 +7,4 @@ Owner: Person A.
 from src.storage.blob_store import BlobStore, BlobValidationError, StoredBlob
 from src.storage.repository import ItemRepository
 
-__all__ = ["BlobStore", "BlobValidationError", "StoredBlob", "ItemRepository"]
+__all__ = ["BlobStore", "BlobValidationError", "ItemRepository", "StoredBlob"]

@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 
-from ai.providers.base import VLMProvider, ProviderError
+from ai.providers.base import ProviderError, VLMProvider
 
 
 class AnthropicVLM(VLMProvider):
@@ -26,7 +26,9 @@ class AnthropicVLM(VLMProvider):
 
     def __init__(self, model: str | None = None, *, api_key: str | None = None) -> None:
         self.model = model or os.getenv("LLM_MODEL", "claude-sonnet-4-6")
-        self._api_key = api_key or os.getenv("ANTHROPIC_API_KEY") or os.getenv("LLM_API_KEY")
+        self._api_key = (
+            api_key or os.getenv("ANTHROPIC_API_KEY") or os.getenv("LLM_API_KEY")
+        )
         if not self._api_key:
             raise ProviderError(
                 "ANTHROPIC_API_KEY (or LLM_API_KEY) is not set. "
@@ -57,10 +59,8 @@ class AnthropicVLM(VLMProvider):
         full_prompt = prompt
         if json_schema is not None:
             full_prompt = (
-                prompt
-                + "\n\nReturn ONLY valid JSON matching this schema "
-                "(no prose, no markdown fences):\n"
-                + json.dumps(json_schema, indent=2)
+                prompt + "\n\nReturn ONLY valid JSON matching this schema "
+                "(no prose, no markdown fences):\n" + json.dumps(json_schema, indent=2)
             )
 
         try:

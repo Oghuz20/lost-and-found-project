@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ai.providers.base import VLMProvider, EmbeddingProvider, ProviderError
+from ai.providers.base import EmbeddingProvider, ProviderError, VLMProvider
 
 
 class GeminiVLM(VLMProvider):
@@ -47,10 +47,8 @@ class GeminiVLM(VLMProvider):
         full_prompt = prompt
         if json_schema is not None:
             full_prompt = (
-                prompt
-                + "\n\nReturn ONLY valid JSON matching this schema "
-                "(no prose, no markdown fences):\n"
-                + json.dumps(json_schema, indent=2)
+                prompt + "\n\nReturn ONLY valid JSON matching this schema "
+                "(no prose, no markdown fences):\n" + json.dumps(json_schema, indent=2)
             )
 
         try:

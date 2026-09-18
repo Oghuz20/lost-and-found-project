@@ -71,7 +71,9 @@ class Settings(BaseSettings):
         default=4, gt=0, description="Semaphore bound for batch registration."
     )
     rate_limit_tpm: int = Field(
-        default=60_000, gt=0, description="Tokens-per-minute budget for the rate limiter."
+        default=60_000,
+        gt=0,
+        description="Tokens-per-minute budget for the rate limiter.",
     )
 
     # --- AI providers (ai/ reads these directly from the environment;
@@ -111,9 +113,9 @@ class Settings(BaseSettings):
         plain ``postgresql://`` (or ``postgres://``), so we strip the driver
         segment here rather than asking everyone to remember to do it.
         """
-        return self.database_url.replace("postgresql+asyncpg://", "postgresql://").replace(
-            "postgres+asyncpg://", "postgresql://"
-        )
+        return self.database_url.replace(
+            "postgresql+asyncpg://", "postgresql://"
+        ).replace("postgres+asyncpg://", "postgresql://")
 
 
 @lru_cache

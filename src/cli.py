@@ -24,11 +24,15 @@ def _build_parser() -> argparse.ArgumentParser:
 
     p_lost = sub.add_parser("register-lost", help="Register a lost item.")
     p_lost.add_argument("--image", required=True, help="Path to a JPEG/PNG image.")
-    p_lost.add_argument("--text", default="", help="Free-text description from the user.")
+    p_lost.add_argument(
+        "--text", default="", help="Free-text description from the user."
+    )
 
     p_found = sub.add_parser("register-found", help="Register a found item.")
     p_found.add_argument("--image", required=True, help="Path to a JPEG/PNG image.")
-    p_found.add_argument("--text", default="", help="Free-text description from the user.")
+    p_found.add_argument(
+        "--text", default="", help="Free-text description from the user."
+    )
 
     p_list = sub.add_parser("list", help="List registered items.")
     p_list.add_argument(
@@ -72,7 +76,9 @@ async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
         embedding=Item.pack_embedding(vec),
     )
     saved = await repo.save_item(item)
-    print(f"registered {kind.value} item #{saved.id}: {desc.object_class} (confidence={desc.confidence:.2f})")
+    print(
+        f"registered {kind.value} item #{saved.id}: {desc.object_class} (confidence={desc.confidence:.2f})"
+    )
 
 
 async def _list(status: str | None) -> None:

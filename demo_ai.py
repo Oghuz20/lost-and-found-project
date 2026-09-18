@@ -23,10 +23,10 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ai import describe_item, embed, top_k
-from ai.providers.base import VLMProvider, EmbeddingProvider
-
+from ai.providers.base import EmbeddingProvider, VLMProvider
 
 # --- fake providers for --offline ----------------------------------------
+
 
 class _OfflineVLM(VLMProvider):
     """Looks at the file name to pretend it identified the object."""
@@ -37,43 +37,55 @@ class _OfflineVLM(VLMProvider):
         if "umbrella" in name:
             payload = {
                 "object_class": "umbrella",
-                "colors": ["black"], "brand": None,
-                "distinguishing_marks": [], "location_hints": [],
+                "colors": ["black"],
+                "brand": None,
+                "distinguishing_marks": [],
+                "location_hints": [],
                 "confidence": 0.8,
             }
         elif "backpack" in name:
             payload = {
                 "object_class": "backpack",
-                "colors": ["navy"], "brand": "JanSport",
-                "distinguishing_marks": ["worn front zipper"], "location_hints": [],
+                "colors": ["navy"],
+                "brand": "JanSport",
+                "distinguishing_marks": ["worn front zipper"],
+                "location_hints": [],
                 "confidence": 0.85,
             }
         elif "phone" in name:
             payload = {
                 "object_class": "phone",
-                "colors": ["black"], "brand": "Apple",
-                "distinguishing_marks": ["cracked screen corner"], "location_hints": [],
+                "colors": ["black"],
+                "brand": "Apple",
+                "distinguishing_marks": ["cracked screen corner"],
+                "location_hints": [],
                 "confidence": 0.9,
             }
         elif "wallet" in name:
             payload = {
                 "object_class": "wallet",
-                "colors": ["brown"], "brand": None,
-                "distinguishing_marks": ["leather, tri-fold"], "location_hints": [],
+                "colors": ["brown"],
+                "brand": None,
+                "distinguishing_marks": ["leather, tri-fold"],
+                "location_hints": [],
                 "confidence": 0.75,
             }
         elif "keys" in name:
             payload = {
                 "object_class": "key ring",
-                "colors": ["silver"], "brand": None,
-                "distinguishing_marks": ["3 keys, blue keychain"], "location_hints": [],
+                "colors": ["silver"],
+                "brand": None,
+                "distinguishing_marks": ["3 keys, blue keychain"],
+                "location_hints": [],
                 "confidence": 0.8,
             }
         else:
             payload = {
                 "object_class": "unknown object",
-                "colors": [], "brand": None,
-                "distinguishing_marks": [], "location_hints": [],
+                "colors": [],
+                "brand": None,
+                "distinguishing_marks": [],
+                "location_hints": [],
                 "confidence": 0.3,
             }
         return json.dumps(payload)
@@ -97,6 +109,7 @@ class _OfflineEmbedder(EmbeddingProvider):
 
 # --- main demo ------------------------------------------------------------
 
+
 def run_demo(offline: bool) -> None:
     here = Path(__file__).parent
     lost_dir = here / "data" / "lost"
@@ -118,13 +131,13 @@ def run_demo(offline: bool) -> None:
                 vec = embed(desc.to_search_text(), embedder=embedder)
                 out.append((img.name, vec, desc.to_search_text()))
                 print(f"  - {img.name}: {desc.object_class} ({desc.confidence:.2f})")
-            except Exception as e:
+            except Exception as e: # noqa: BLE001
                 print(f"  ! {img.name} failed: {e}", file=sys.stderr)
         return out
 
     print(f"Processing LOST items (mode={'offline' if offline else 'online'})...")
     lost = process(lost_dir)
-    print(f"\nProcessing FOUND items...")
+    print("\nProcessing FOUND items...")
     found = process(found_dir)
 
     if not lost or not found:
@@ -145,8 +158,11 @@ def run_demo(offline: bool) -> None:
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--offline", action="store_true",
-                   help="Use fake providers (no API keys, no network).")
+    p.add_argument(
+        "--offline",
+        action="store_true",
+        help="Use fake providers (no API keys, no network).",
+    )
     args = p.parse_args()
     run_demo(offline=args.offline)
 

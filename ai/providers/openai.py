@@ -9,7 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ai.providers.base import VLMProvider, EmbeddingProvider, ProviderError
+from ai.providers.base import EmbeddingProvider, ProviderError, VLMProvider
 
 
 class OpenAIVLM(VLMProvider):
@@ -17,7 +17,9 @@ class OpenAIVLM(VLMProvider):
 
     def __init__(self, model: str | None = None, *, api_key: str | None = None) -> None:
         self.model = model or os.getenv("LLM_MODEL", "gpt-4o-mini")
-        self._api_key = api_key or os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
+        self._api_key = (
+            api_key or os.getenv("OPENAI_API_KEY") or os.getenv("LLM_API_KEY")
+        )
         if not self._api_key:
             raise ProviderError("OPENAI_API_KEY (or LLM_API_KEY) is not set.")
         try:
@@ -45,10 +47,8 @@ class OpenAIVLM(VLMProvider):
         full_prompt = prompt
         if json_schema is not None:
             full_prompt = (
-                prompt
-                + "\n\nReturn ONLY valid JSON matching this schema "
-                "(no prose, no markdown fences):\n"
-                + json.dumps(json_schema, indent=2)
+                prompt + "\n\nReturn ONLY valid JSON matching this schema "
+                "(no prose, no markdown fences):\n" + json.dumps(json_schema, indent=2)
             )
 
         kwargs: dict = {
@@ -82,9 +82,7 @@ class OpenAIEmbedding(EmbeddingProvider):
     def __init__(self, model: str | None = None, *, api_key: str | None = None) -> None:
         self.model = model or os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
         self._api_key = (
-            api_key
-            or os.getenv("OPENAI_API_KEY")
-            or os.getenv("EMBEDDING_API_KEY")
+            api_key or os.getenv("OPENAI_API_KEY") or os.getenv("EMBEDDING_API_KEY")
         )
         if not self._api_key:
             raise ProviderError("OPENAI_API_KEY (or EMBEDDING_API_KEY) is not set.")

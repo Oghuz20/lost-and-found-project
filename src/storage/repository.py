@@ -45,7 +45,9 @@ class ItemRepository:
 
     async def list_items(self, status: ItemStatus | str | None = None) -> list[Item]:
         if status is None:
-            rows = await self._pool.fetch("SELECT * FROM items ORDER BY created_at DESC")
+            rows = await self._pool.fetch(
+                "SELECT * FROM items ORDER BY created_at DESC"
+            )
         else:
             status_value = status.value if isinstance(status, ItemStatus) else status
             rows = await self._pool.fetch(

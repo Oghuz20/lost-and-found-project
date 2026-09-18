@@ -21,7 +21,9 @@ JPEG_LIKE_BYTES = b"\xff\xd8\xff" + b"\x00" * 40
 
 
 def _store(tmp_path: Path, **overrides: object) -> BlobStore:
-    settings = Settings(_env_file=None, image_storage_dir=tmp_path / "blobs", **overrides)
+    settings = Settings(
+        _env_file=None, image_storage_dir=tmp_path / "blobs", **overrides
+    )
     return BlobStore(settings)
 
 

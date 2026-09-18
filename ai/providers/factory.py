@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import os
 
-from ai.providers.base import VLMProvider, EmbeddingProvider, ProviderError
+from ai.providers.base import EmbeddingProvider, ProviderError, VLMProvider
 
 
 def get_vlm() -> VLMProvider:
@@ -22,12 +22,15 @@ def get_vlm() -> VLMProvider:
     provider = os.getenv("LLM_PROVIDER", "anthropic").lower().strip()
     if provider == "anthropic":
         from ai.providers.anthropic import AnthropicVLM
+
         return AnthropicVLM()
     if provider == "openai":
         from ai.providers.openai import OpenAIVLM
+
         return OpenAIVLM()
     if provider in ("google", "gemini"):
         from ai.providers.google import GeminiVLM
+
         return GeminiVLM()
     raise ProviderError(
         f"Unknown LLM_PROVIDER={provider!r}. Expected anthropic | openai | gemini."
@@ -39,9 +42,11 @@ def get_embedder() -> EmbeddingProvider:
     provider = os.getenv("EMBEDDING_PROVIDER", "openai").lower().strip()
     if provider == "openai":
         from ai.providers.openai import OpenAIEmbedding
+
         return OpenAIEmbedding()
     if provider in ("google", "gemini"):
         from ai.providers.google import GeminiEmbedding
+
         return GeminiEmbedding()
     raise ProviderError(
         f"Unknown EMBEDDING_PROVIDER={provider!r}. Expected openai | gemini. "

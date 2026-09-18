@@ -17,6 +17,7 @@ Requires Pillow (`pip install pillow`). Run from the topic root:
 """
 
 from pathlib import Path
+
 from PIL import Image, ImageDraw
 
 IMG = 256  # canvas size
@@ -33,6 +34,7 @@ def _new(bg=(245, 245, 240)):
 # to its "lost" counterpart.
 # ---------------------------------------------------------------------------
 
+
 def draw_umbrella(variant: int = 0):
     img, d = _new()
     canopy_color = [(35, 35, 40), (45, 45, 55)][variant]
@@ -42,7 +44,9 @@ def draw_umbrella(variant: int = 0):
     d.pieslice([cx - 80, cy - 80, cx + 80, cy + 80], 180, 360, fill=canopy_color)
     # ribs
     for x in (cx - 60, cx - 30, cx, cx + 30, cx + 60):
-        d.line([(cx, cy), (x, cy - (80 - abs(cx - x) * 0.5))], fill=(15, 15, 20), width=1)
+        d.line(
+            [(cx, cy), (x, cy - (80 - abs(cx - x) * 0.5))], fill=(15, 15, 20), width=1
+        )
     # rim scallops
     for x in (cx - 80, cx - 50, cx - 20, cx + 10, cx + 40, cx + 70):
         d.arc([x - 5, cy - 8, x + 25, cy + 12], 0, 180, fill=(15, 15, 20), width=2)
@@ -60,7 +64,9 @@ def draw_backpack(variant: int = 0):
     # main body (rounded rectangle)
     d.rounded_rectangle([60, 70, 196, 220], radius=20, fill=body_color)
     # top flap
-    d.rounded_rectangle([70, 60, 186, 130], radius=15, fill=body_color, outline=(15, 25, 60), width=2)
+    d.rounded_rectangle(
+        [70, 60, 186, 130], radius=15, fill=body_color, outline=(15, 25, 60), width=2
+    )
     # straps
     d.rectangle([70, 60, 90, 220], fill=strap_color)
     d.rectangle([166, 60, 186, 220], fill=strap_color)
@@ -79,7 +85,9 @@ def draw_phone(variant: int = 0):
     img, d = _new()
     body_color = [(20, 20, 25), (30, 30, 35)][variant]
     # phone body (tall rounded rect)
-    d.rounded_rectangle([88, 40, 168, 220], radius=18, fill=body_color, outline=(60, 60, 65), width=2)
+    d.rounded_rectangle(
+        [88, 40, 168, 220], radius=18, fill=body_color, outline=(60, 60, 65), width=2
+    )
     # screen
     d.rounded_rectangle([95, 55, 161, 200], radius=8, fill=(15, 15, 20))
     # camera notch
@@ -97,7 +105,9 @@ def draw_wallet(variant: int = 0):
     leather = [(95, 60, 35), (110, 70, 40)][variant]
     stitch = (200, 170, 100)
     # main body
-    d.rounded_rectangle([45, 90, 211, 180], radius=8, fill=leather, outline=(60, 35, 15), width=2)
+    d.rounded_rectangle(
+        [45, 90, 211, 180], radius=8, fill=leather, outline=(60, 35, 15), width=2
+    )
     # tri-fold line
     d.line([(128, 92), (128, 178)], fill=(60, 35, 15), width=1)
     # stitching
@@ -152,7 +162,9 @@ def draw_book():
     cover = (40, 110, 60)
     pages = (240, 235, 220)
     # main cover
-    d.rounded_rectangle([55, 50, 200, 215], radius=4, fill=cover, outline=(20, 60, 35), width=2)
+    d.rounded_rectangle(
+        [55, 50, 200, 215], radius=4, fill=cover, outline=(20, 60, 35), width=2
+    )
     # spine highlight
     d.rectangle([55, 50, 70, 215], fill=(30, 90, 50))
     # pages (right edge)
@@ -169,19 +181,18 @@ def draw_book():
 
 SAMPLES = [
     # (subdir, filename, drawer, variant)
-    ("lost",  "umbrella_black.png",       draw_umbrella, 0),
-    ("lost",  "backpack_navy.png",        draw_backpack, 0),
-    ("lost",  "phone_apple_black.png",    draw_phone,    0),
-    ("lost",  "wallet_brown.png",         draw_wallet,   0),
-    ("lost",  "keys_silver.png",          draw_keys,     0),
-
-    ("found", "umbrella_black_2.png",     draw_umbrella, 1),
-    ("found", "backpack_navy_2.png",      draw_backpack, 1),
-    ("found", "phone_apple_black_2.png",  draw_phone,    1),
-    ("found", "wallet_brown_2.png",       draw_wallet,   1),
-    ("found", "keys_silver_2.png",        draw_keys,     1),
-    ("found", "scarf_red.png",            draw_scarf,    None),  # noise
-    ("found", "book_green.png",           draw_book,     None),  # noise
+    ("lost", "umbrella_black.png", draw_umbrella, 0),
+    ("lost", "backpack_navy.png", draw_backpack, 0),
+    ("lost", "phone_apple_black.png", draw_phone, 0),
+    ("lost", "wallet_brown.png", draw_wallet, 0),
+    ("lost", "keys_silver.png", draw_keys, 0),
+    ("found", "umbrella_black_2.png", draw_umbrella, 1),
+    ("found", "backpack_navy_2.png", draw_backpack, 1),
+    ("found", "phone_apple_black_2.png", draw_phone, 1),
+    ("found", "wallet_brown_2.png", draw_wallet, 1),
+    ("found", "keys_silver_2.png", draw_keys, 1),
+    ("found", "scarf_red.png", draw_scarf, None),  # noise
+    ("found", "book_green.png", draw_book, None),  # noise
 ]
 
 
