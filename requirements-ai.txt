@@ -1,0 +1,11 @@
+# Dependencies needed to RUN the provided ai/ package.
+numpy>=1.24
+pydantic>=2.7
+
+# Providers
+anthropic>=0.39.0
+openai>=1.50.0
+google-genai>=0.3.0
+
+# Smoke tests
+pytest>=8.0
