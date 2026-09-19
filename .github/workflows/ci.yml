@@ -43,8 +43,8 @@ jobs:
       - name: Lint
         run: ruff check src/ tests/
 
-      - name: Type check
-        run: mypy src/
+      - name: Run mypy
+        run: python -m mypy --explicit-package-bases src/
 
       - name: Test (offline AI smoke tests + SE-layer tests, coverage-gated)
         env:
