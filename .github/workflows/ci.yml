@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    # A real Postgres for the storage tests / smoke tests that need one.
+    # (Person C's offline unit tests use fakes and don't touch this.)
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: lostfound
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-ai.txt
+          pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check src/ tests/
+
+      - name: Type check
+        run: mypy src/
+
+      - name: Test (offline AI smoke tests + SE-layer tests, coverage-gated)
+        env:
+          DATABASE_URL: postgresql+asyncpg://postgres:dev@localhost:5432/lostfound
+        run: pytest --cov=src --cov-fail-under=60 --cov-report=term-missing
+
+      - name: Docker build
+        run: docker build -t lost-and-found .
+
+# Failing any step above blocks merge once branch protection requires this
+# workflow (Settings -> Branches -> Require status checks to pass).
