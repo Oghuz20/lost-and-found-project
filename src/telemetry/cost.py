@@ -7,7 +7,7 @@ enabling cost reporting and budget monitoring.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Lock
 from typing import Any
 
@@ -122,7 +122,7 @@ class CostTracker:
         cost_usd = self._calculate_cost(provider, model, input_tokens, output_tokens)
 
         record = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation=operation,
             provider=provider,
             model=model,
@@ -152,7 +152,7 @@ class CostTracker:
         Returns:
             List of CostRecord objects from the specified time period
         """
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
         with self._lock:
             return [
                 record for record in self._records
@@ -212,7 +212,7 @@ class CostTracker:
         Returns:
             Number of records removed
         """
-        cutoff_time = datetime.now() - timedelta(hours=hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
         with self._lock:
             initial_count = len(self._records)
             self._records = [
@@ -305,9 +305,9 @@ def get_cost_report(hours: int = 24) -> str:
     lines = [
         f"AI Usage Cost Report (Last {hours} hours)",
         "=" * 50,
-        f"Total Calls: {call_counts['total']} "
+        f"Total Calls: {call_counts['total']} ",
         f"(Successful: {call_counts['successful']}, Failed: {call_counts['failed']})",
-        f"Total Tokens: {token_usage['total_tokens']:,} "
+        f"Total Tokens: {token_usage['total_tokens']:,} ",
         f"(Input: {token_usage['input_tokens']:,}, Output: {token_usage['output_tokens']:,})",
         f"Total Cost: ${total_cost:.6f}",
         "",

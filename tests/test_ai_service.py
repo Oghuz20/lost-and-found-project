@@ -52,9 +52,8 @@ class TestAIService:
         def always_fail(*args, **kwargs):
             raise ProviderError("Persistent failure")
 
-        with patch('src.services.ai_service.ai.describe_item', side_effect=always_fail):
-            with pytest.raises(AIServiceError, match="describe_item failed after 3 attempts"):
-                describe_item(sample_image, "test")
+        with patch('src.services.ai_service.ai.describe_item', side_effect=always_fail), pytest.raises(AIServiceError, match="describe_item failed after 3 attempts"):
+            describe_item(sample_image, "test")
 
     def test_describe_item_no_retry_on_value_error(self, sample_image):
         """Test that ValueError is not retried (invalid input)."""
@@ -144,7 +143,7 @@ class TestAIService:
                 embedding = embed(text, embedder=fake_embedder)
                 results.append(embedding)
                 result_texts.append(text)
-            except Exception as e:
+            except Exception as e: # noqa: BLE001
                 errors.append(e)
 
         # Start multiple threads

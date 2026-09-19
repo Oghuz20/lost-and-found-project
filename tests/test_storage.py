@@ -113,13 +113,13 @@ def repo(pool: FakePool) -> ItemRepository:
 
 
 def _lost_item(**overrides: Any) -> Item:
-    defaults: dict[str, Any] = dict(
-        status=ItemStatus.LOST,
-        user_text="black umbrella near the library",
-        image_path="/data/blobs/abc.png",
-        vlm_description={"object_class": "umbrella", "colors": ["black"], "confidence": 0.8},
-        embedding=Item.pack_embedding(np.zeros(4, dtype=np.float32)),
-    )
+    defaults: dict[str, Any] = {
+        "status":ItemStatus.LOST,
+        "user_text":"black umbrella near the library",
+        "image_path":"/data/blobs/abc.png",
+        "vlm_description":{"object_class": "umbrella", "colors": ["black"], "confidence": 0.8},
+        "embedding":Item.pack_embedding(np.zeros(4, dtype=np.float32)),
+    }
     defaults.update(overrides)
     return Item(**defaults)
 

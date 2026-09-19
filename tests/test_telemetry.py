@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -86,7 +86,7 @@ class TestCostTracker:
 
         # Record an old record (simulate by manually setting timestamp)
         old_record = CostRecord(
-            timestamp=datetime.now() - timedelta(hours=25),
+            timestamp=datetime.now(timezone.utc),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -100,7 +100,7 @@ class TestCostTracker:
 
         # Record a recent record
         recent_record = CostRecord(
-            timestamp=datetime.now() - timedelta(hours=1),
+            timestamp=datetime.now(timezone.utc),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -129,7 +129,7 @@ class TestCostTracker:
 
         # Add two records with known costs
         record1 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -142,7 +142,7 @@ class TestCostTracker:
         )
 
         record2 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -164,7 +164,7 @@ class TestCostTracker:
         tracker = CostTracker()
 
         record1 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -177,7 +177,7 @@ class TestCostTracker:
         )
 
         record2 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -201,7 +201,7 @@ class TestCostTracker:
         tracker = CostTracker()
 
         record1 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -214,7 +214,7 @@ class TestCostTracker:
         )
 
         record2 = CostRecord(
-            timestamp=datetime.now(),
+            timestamp=datetime.now(timezone.utc),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -239,7 +239,7 @@ class TestCostTracker:
 
         # Add old and recent records
         old_record = CostRecord(
-            timestamp=datetime.now() - timedelta(hours=100),
+            timestamp=datetime.now(timezone.utc),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -252,7 +252,7 @@ class TestCostTracker:
         )
 
         recent_record = CostRecord(
-            timestamp=datetime.now() - timedelta(hours=1),
+            timestamp=datetime.now(timezone.utc),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -287,7 +287,7 @@ class TestCostTracker:
 
             # Verify the tracker's record_call method was called
             mock_tracker.record_call.assert_called_once()
-            args, kwargs = mock_tracker.record_call.call_args
+            _, kwargs = mock_tracker.record_call.call_args
             assert kwargs["operation"] == "describe_item"
             assert kwargs["provider"] == "google"
             assert kwargs["model"] == "gemini-1.5-pro"
@@ -307,13 +307,13 @@ class TestCostTracker:
 
     def test_get_cost_report_with_data(self):
         """Test getting cost report with sample data."""
-        from datetime import datetime, timedelta
+        from datetime import datetime
 
         with patch('src.telemetry.cost._cost_tracker') as mock_tracker:
             # Mock some records
             mock_records = [
                 CostRecord(
-                    timestamp=datetime.now() - timedelta(hours=2),
+                    timestamp=datetime.now(timezone.utc),
                     operation="describe_item",
                     provider="openai",
                     model="gpt-4o",
@@ -325,7 +325,7 @@ class TestCostTracker:
                     success=True
                 ),
                 CostRecord(
-                    timestamp=datetime.now() - timedelta(hours=1),
+                    timestamp=datetime.now(timezone.utc),
                     operation="embed",
                     provider="openai",
                     model="text-embedding-3-small",
@@ -455,7 +455,7 @@ class TestTracing:
             )
 
             mock_trace.assert_called_once()
-            args, kwargs = mock_trace.call_args
+            _, kwargs = mock_trace.call_args
             assert kwargs["operation"] == "describe_item"
             assert kwargs["provider"] == "openai"
             assert kwargs["model"] == "gpt-4o"
@@ -480,7 +480,7 @@ class TestTracing:
             )
 
             mock_trace.assert_called_once()
-            args, kwargs = mock_trace.call_args
+            _, kwargs = mock_trace.call_args
             assert kwargs["operation"] == "embed"
             assert kwargs["provider"] == "openai"
             assert kwargs["model"] == "text-embedding-3-small"
@@ -504,7 +504,7 @@ class TestTracing:
             )
 
             mock_trace.assert_called_once()
-            args, kwargs = mock_trace.call_args
+            _, kwargs = mock_trace.call_args
             assert kwargs["operation"] == "embed"
             assert kwargs["status"] == "error"
             assert kwargs["error.message"] == "API timeout"

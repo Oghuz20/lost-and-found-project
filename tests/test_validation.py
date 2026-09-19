@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
 from ai.schemas import ItemDescription
 from src.validation import (
@@ -33,17 +34,17 @@ class TestValidationModels:
     def test_lost_item_input_empty_fails(self):
         """Test that empty user text fails validation."""
         data = {"user_text": ""}
-        with pytest.raises(Exception):  # ValidationError
+        with pytest.raises(ValidationError):  # ValidationError
             validate_lost_item_input(data)
 
         data = {"user_text": "   "}
-        with pytest.raises(Exception):  # ValidationError
+        with pytest.raises(ValidationError):  # ValidationError
             validate_lost_item_input(data)
 
     def test_lost_item_input_too_long_fails(self):
         """Test that overly long user text fails."""
         data = {"user_text": "x" * 501}
-        with pytest.raises(Exception):  # ValidationError
+        with pytest.raises(ValidationError):  # ValidationError
             validate_lost_item_input(data)
 
     def test_found_item_input_valid(self):
@@ -67,13 +68,13 @@ class TestValidationModels:
     def test_search_matches_input_too_low_fails(self):
         """Test that k < 1 fails."""
         data = {"k": 0}
-        with pytest.raises(Exception):  # ValidationError
+        with pytest.raises(ValidationError):  # ValidationError
             validate_search_matches_input(data)
 
     def test_search_matches_input_too_high_fails(self):
         """Test that k > 20 fails."""
         data = {"k": 25}
-        with pytest.raises(Exception):  # ValidationError
+        with pytest.raises(ValidationError):  # ValidationError
             validate_search_matches_input(data)
 
 
