@@ -1,0 +1,24 @@
+# --- Core / shared ---
+numpy>=1.24.0
+pydantic>=2.0.0
+pydantic-settings>=2.4
+python-dotenv>=1.0.0        # loads .env for pydantic-settings
+
+# --- AI providers (uncomment whichever your team settles on) ---
+anthropic>=0.7.0
+# openai>=1.0.0
+google-generativeai>=0.3.0
+
+# --- Person A: storage ---
+asyncpg>=0.29
+
+# --- Person B: HTTP API, concurrency ---
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart
+
+# --- Person C: AI wrapping, robustness, telemetry ---
+tenacity>=8.0.0
+opentelemetry-api>=1.20.0
+opentelemetry-sdk>=1.20.0
+opentelemetry-exporter-otlp-proto-grpc>=1.20.0
