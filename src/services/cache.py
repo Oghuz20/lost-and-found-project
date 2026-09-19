@@ -8,10 +8,10 @@ model, caching avoids unnecessary API calls and improves performance.
 from __future__ import annotations
 
 import threading
-from typing import Dict, Optional
-from ai.providers.factory import get_embedder as get_default_embedder
 
 import numpy as np
+
+from ai.providers.factory import get_embedder as get_default_embedder
 
 
 class EmbeddingCache:
@@ -22,12 +22,12 @@ class EmbeddingCache:
     """
 
     def __init__(self) -> None:
-        self._cache: Dict[str, np.ndarray] = {}
+        self._cache: dict[str, np.ndarray] = {}
         self._lock = threading.RLock()
         self._hits = 0
         self._misses = 0
 
-    def get(self, text: str) -> Optional[np.ndarray]:
+    def get(self, text: str) -> np.ndarray | None:
         """Get embedding for text from cache.
 
         Args:

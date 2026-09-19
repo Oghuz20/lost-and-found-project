@@ -1,6 +1,6 @@
 import asyncio
 import time
-from typing import Dict, Any
+from typing import Any
 
 
 class TokenBucketRateLimiter:
@@ -53,7 +53,7 @@ class TokenBucketRateLimiter:
 
                 await asyncio.sleep(sleep_time)
 
-    def get_state(self) -> Dict[str, Any]:
+    def get_state(self) -> dict[str, Any]:
         """Возвращает текущий баланс токенов для логов/демонстрации."""
         return {
             "available_requests": round(self.req_tokens, 2),

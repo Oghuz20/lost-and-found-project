@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import os
 
-from ai.providers.base import VLMProvider, EmbeddingProvider, ProviderError
+from ai.providers.base import EmbeddingProvider, ProviderError, VLMProvider
 
 
 def get_vlm() -> VLMProvider:

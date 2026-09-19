@@ -17,6 +17,7 @@ Requires Pillow (`pip install pillow`). Run from the topic root:
 """
 
 from pathlib import Path
+
 from PIL import Image, ImageDraw
 
 IMG = 256  # canvas size

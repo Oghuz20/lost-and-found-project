@@ -1,8 +1,7 @@
-from typing import Optional
-from fastapi import FastAPI, UploadFile, File, Form, Query, HTTPException, Depends
+
+from fastapi import Depends, FastAPI, File, Form, Query, UploadFile
 
 from src.config import get_settings
-from src.models import ItemStatus
 from src.storage.db import get_pool, init_schema
 from src.storage.repository import ItemRepository
 
@@ -50,7 +49,7 @@ async def register_found_item(
 
 @app.get("/items")
 async def list_items(
-    status: Optional[str] = Query(None, description="Filter by 'lost' or 'found'"),
+    status: str | None = Query(None, description="Filter by 'lost' or 'found'"),
     repo: ItemRepository = Depends(get_repo),
 ):
     """Получение списка всех зарегистрированных предметов."""

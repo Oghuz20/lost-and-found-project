@@ -1,6 +1,7 @@
 """Tests for CLI subcommands."""
 
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
 
 from ai.vlm import ItemDescription

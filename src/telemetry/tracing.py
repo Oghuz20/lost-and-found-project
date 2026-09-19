@@ -8,18 +8,16 @@ attributes for monitoring and debugging.
 from __future__ import annotations
 
 import os
-import time
-from typing import Dict, Any, Optional
+from typing import Any
 
 try:
     from opentelemetry import trace
-    from opentelemetry.trace import Status, StatusCode
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
     from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
     from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanProcessor
     from opentelemetry.semconv.resource import ResourceAttributes
-    from opentelemetry.sdk.trace.export import SpanProcessor
+    from opentelemetry.trace import Status, StatusCode
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:
     OPENTELEMETRY_AVAILABLE = False
@@ -60,7 +58,10 @@ def _initialize_tracer() -> None:
             processor = BatchSpanProcessor(otlp_exporter)
             logger.info("OpenTelemetry initialized with OTLP exporter at %s", otlp_endpoint)
         else:
-            from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
+            from opentelemetry.sdk.trace.export import (
+                ConsoleSpanExporter,
+                SimpleSpanProcessor,
+            )
             console_exporter = ConsoleSpanExporter()
             processor = SimpleSpanProcessor(console_exporter)
             logger.info("OpenTelemetry initialized with console exporter (no OTEL_EXPORTER_OTLP_ENDPOINT set)")
@@ -143,8 +144,8 @@ def trace_describe_item(
     success: bool,
     provider: str = "unknown",
     model: str = "unknown",
-    result: Optional[Any] = None,
-    error: Optional[str] = None
+    result: Any | None = None,
+    error: str | None = None
 ) -> None:
     """Trace a describe_item AI call.
 
@@ -189,8 +190,8 @@ def trace_embed(
     success: bool,
     provider: str = "unknown",
     model: str = "unknown",
-    embedding: Optional[Any] = None,
-    error: Optional[str] = None
+    embedding: Any | None = None,
+    error: str | None = None
 ) -> None:
     """Trace an embed AI call.
 
@@ -204,7 +205,7 @@ def trace_embed(
         error: Error message (if failed)
     """
     status = "success" if success else "error"
-    attributes: Dict[str, Any] = {
+    attributes: dict[str, Any] = {
         "text_length": len(text) if text else 0,
     }
 

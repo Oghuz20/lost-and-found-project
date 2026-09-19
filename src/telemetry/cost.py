@@ -6,12 +6,10 @@ enabling cost reporting and budget monitoring.
 
 from __future__ import annotations
 
-import json
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from threading import Lock
-from typing import Dict, List, Optional, Any
+from typing import Any
 
 from ..logging_config import get_logger
 
@@ -31,18 +29,18 @@ class CostRecord:
     cost_usd: float
     latency_ms: float
     success: bool
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class CostTracker:
     """Tracks AI API usage and costs over time."""
 
     def __init__(self) -> None:
-        self._records: List[CostRecord] = []
+        self._records: list[CostRecord] = []
         self._lock = Lock()
         # Pricing table (USD per 1K tokens) - these should be configurable
         # Based on typical free-tier/trial pricing as of 2024
-        self._pricing: Dict[str, Dict[str, Dict[str, float]]] = {
+        self._pricing: dict[str, dict[str, dict[str, float]]] = {
             "openai": {
                 "gpt-4o": {"input": 0.005, "output": 0.015},
                 "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
@@ -104,7 +102,7 @@ class CostTracker:
         output_text: str | None = None,
         latency_ms: float = 0.0,
         success: bool = True,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: dict[str, Any] | None = None
     ) -> None:
         """Record an AI API call for cost tracking.
 
@@ -145,7 +143,7 @@ class CostTracker:
             operation, provider, model, total_tokens, cost_usd, latency_ms
         )
 
-    def get_records_since(self, hours: int = 24) -> List[CostRecord]:
+    def get_records_since(self, hours: int = 24) -> list[CostRecord]:
         """Get records from the last N hours.
 
         Args:
@@ -173,7 +171,7 @@ class CostTracker:
         records = self.get_records_since(hours)
         return sum(record.cost_usd for record in records)
 
-    def get_token_usage(self, hours: int = 24) -> Dict[str, int]:
+    def get_token_usage(self, hours: int = 24) -> dict[str, int]:
         """Get token usage statistics for the last N hours.
 
         Args:
@@ -189,7 +187,7 @@ class CostTracker:
             "total_tokens": sum(r.total_tokens for r in records)
         }
 
-    def get_call_count(self, hours: int = 24) -> Dict[str, int]:
+    def get_call_count(self, hours: int = 24) -> dict[str, int]:
         """Get API call counts for the last N hours.
 
         Args:
@@ -238,7 +236,7 @@ def record_cost(
     model: str = "unknown",
     input_text: str = "",
     output_text: str | None = None,
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 ) -> None:
     """Record cost information for an AI call.
 
@@ -284,7 +282,7 @@ def get_cost_report(hours: int = 24) -> str:
     call_counts = _cost_tracker.get_call_count(hours)
 
     # Group by operation and provider for detailed breakdown
-    breakdown: Dict[str, Dict[str, Dict[str, Any]]] = {}
+    breakdown: dict[str, dict[str, dict[str, Any]]] = {}
     for record in records:
         if record.operation not in breakdown:
             breakdown[record.operation] = {}

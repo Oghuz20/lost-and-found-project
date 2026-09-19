@@ -14,7 +14,6 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-
 # -- JSON schema we ask the VLM to honour ------------------------------------
 
 ITEM_DESCRIPTION_SCHEMA: dict[str, Any] = {

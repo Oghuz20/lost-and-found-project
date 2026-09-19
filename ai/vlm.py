@@ -7,10 +7,9 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from ai.providers.base import VLMProvider, ProviderError
+from ai.providers.base import ProviderError, VLMProvider
 from ai.providers.factory import get_vlm
 from ai.schemas import ITEM_DESCRIPTION_SCHEMA, ItemDescription
-
 
 _PROMPT = """You are an assistant cataloguing items for a lost-and-found service.
 

@@ -12,7 +12,7 @@ from typing import Any
 import numpy as np
 import pytest
 
-from ai.providers.base import VLMProvider, EmbeddingProvider
+from ai.providers.base import EmbeddingProvider, VLMProvider
 
 
 class FakeVLM(VLMProvider):

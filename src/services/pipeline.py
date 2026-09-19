@@ -1,5 +1,5 @@
-import asyncio
-from typing import List, Any, Dict
+from typing import Any
+
 from src.models import Item, ItemStatus
 from src.services.concurrency.batch_runner import BatchRunner
 from src.services.concurrency.rate_limiter import TokenBucketRateLimiter
@@ -59,11 +59,11 @@ class PipelineService:
         saved_item = await self.repository.save_item(item_model)
         return saved_item
 
-    async def register_batch(self, items_data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    async def register_batch(self, items_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """
         Параллельная регистрация списка предметов.
         """
-        async def _process_one(data: Dict[str, Any]) -> Dict[str, Any]:
+        async def _process_one(data: dict[str, Any]) -> dict[str, Any]:
             saved_item = await self.register_item(
                 status=data["status"],
                 user_text=data.get("user_text", ""),
@@ -74,7 +74,7 @@ class PipelineService:
 
         raw_results = await self.batch_runner.run_batch(items_data, _process_one)
 
-        results: List[Dict[str, Any]] = []
+        results: list[dict[str, Any]] = []
         for data, res in zip(items_data, raw_results):
             if isinstance(res, BaseException):
                 results.append({

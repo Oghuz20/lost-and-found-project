@@ -4,18 +4,15 @@ from __future__ import annotations
 
 import pytest
 
-from src.validation import (
-    validate_lost_item_input,
-    validate_found_item_input,
-    validate_search_matches_input,
-    validate_description_fields,
-    safe_json_loads,
-    extract_user_text_from_request,
-    LostItemInput,
-    FoundItemInput,
-    SearchMatchesInput
-)
 from ai.schemas import ItemDescription
+from src.validation import (
+    extract_user_text_from_request,
+    safe_json_loads,
+    validate_description_fields,
+    validate_found_item_input,
+    validate_lost_item_input,
+    validate_search_matches_input,
+)
 
 
 class TestValidationModels:

@@ -84,7 +84,7 @@ class FakePool:
         rows.sort(key=lambda r: r["created_at"], reverse=True)
         return [_FakeRecord(r) for r in rows]
 
-    def acquire(self) -> "_AcquireCtx":
+    def acquire(self) -> _AcquireCtx:
         return _AcquireCtx(self)
 
     async def execute(self, ddl: str) -> None:

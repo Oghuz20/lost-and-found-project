@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from ai.providers.base import VLMProvider, EmbeddingProvider, ProviderError
+from ai.providers.base import EmbeddingProvider, ProviderError, VLMProvider
 
 
 class GeminiVLM(VLMProvider):

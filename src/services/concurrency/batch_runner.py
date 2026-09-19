@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import asyncio
-from typing import List, Callable, Any, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 R = TypeVar("R")
@@ -17,17 +18,17 @@ class BatchRunner:
 
     async def run_batch(
         self,
-        items: List[T],
+        items: list[T],
         async_func: Callable[[T], Any],
         *,
         raise_on_error: bool = False,
-    ) -> List[R | BaseException]:
+    ) -> list[R | BaseException]:
         async def _worker(item: T) -> R:
             async with self.semaphore:
                 return await async_func(item)
 
         tasks = [_worker(item) for item in items]
-        results: List[R | BaseException] = await asyncio.gather(*tasks, return_exceptions=True)
+        results: list[R | BaseException] = await asyncio.gather(*tasks, return_exceptions=True)
 
         if raise_on_error:
             for res in results:
