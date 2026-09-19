@@ -8,6 +8,7 @@ SE-layer concerns and belong to the student's wrapper code.
 from __future__ import annotations
 
 import abc
+
 import numpy as np
 
 

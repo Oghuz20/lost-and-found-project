@@ -12,27 +12,25 @@ Works both with the HTTP API (when running) and in offline/direct mode.
 from __future__ import annotations
 
 import argparse
-import json
-import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Ensure imports work regardless of execution directory
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import requests
+from dotenv import load_dotenv
 
 from ai import top_k
 from ai.schemas import ItemDescription
 from src.services.ai_service import describe_item, embed
 from src.services.cache import get_embedding_cache
 
-from dotenv import load_dotenv
 load_dotenv()
 
 
-def load_items_from_directory(directory: Path) -> List[Path]:
+def load_items_from_directory(directory: Path) -> list[Path]:
     """Load all PNG/JPG images from a directory."""
     if not directory.exists():
         print(f"!! Directory not found: {directory}", file=sys.stderr)
@@ -49,7 +47,7 @@ def register_item_via_api(
     item_type: str,
     user_text: str = "",
     api_base_url: str = "http://localhost:8000",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Register an item via the HTTP API (POST /items/lost or /items/found)."""
     endpoint = f"{api_base_url}/items/{item_type}"
     with open(image_path, "rb") as f:
@@ -64,7 +62,7 @@ def process_item_direct(
     image_path: Path,
     user_text: str = "",
     use_fake_providers: bool = False,
-) -> Tuple[str, ItemDescription, List[float]]:
+) -> tuple[str, ItemDescription, list[float]]:
     """Process an item directly using Python service wrappers."""
     filename = image_path.name
 

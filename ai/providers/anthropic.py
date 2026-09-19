@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 
-from ai.providers.base import VLMProvider, ProviderError
+from ai.providers.base import ProviderError, VLMProvider
 
 
 class AnthropicVLM(VLMProvider):

@@ -9,16 +9,13 @@ Add your own tests in tests/test_*.py — these stay as-is.
 
 from __future__ import annotations
 
-import json
-
 import numpy as np
 import pytest
 
-from ai import describe_item, embed, cosine, top_k, ItemDescription, MatchResult
+from ai import ItemDescription, MatchResult, cosine, describe_item, embed, top_k
 from ai.providers.base import ProviderError
-from ai.vlm import _parse_json
 from ai.schemas import ITEM_DESCRIPTION_SCHEMA
-
+from ai.vlm import _parse_json
 
 # --- describe_item ---------------------------------------------------------
 

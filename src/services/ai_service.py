@@ -5,25 +5,26 @@ Only this module should import from `ai` directly. Everything else
 """
 from __future__ import annotations
 
+import logging
 import os
 import time
-import logging
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 
 from tenacity import (
+    before_sleep_log,
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
-    retry_if_exception_type,
-    before_sleep_log,
 )
 
 import ai
 from ai.providers.base import ProviderError
 from ai.schemas import ItemDescription
 
-from ..services.cache import cached_embed, get_embedding_cache
 from ..logging_config import get_logger, setup_logging
+from ..services.cache import cached_embed
 from ..telemetry.cost import record_cost
 from ..telemetry.tracing import trace_ai_call
 

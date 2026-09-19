@@ -8,10 +8,9 @@ result in clean error messages rather than stack traces.
 
 from __future__ import annotations
 
-import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from pydantic import BaseModel, Field, ValidationError, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from ai.schemas import ItemDescription
 
@@ -55,7 +54,7 @@ class SearchMatchesInput(BaseModel):
         return v
 
 
-def validate_lost_item_input(data: Dict[str, Any]) -> LostItemInput:
+def validate_lost_item_input(data: dict[str, Any]) -> LostItemInput:
     """Validate input for registering a lost item.
 
     Args:
@@ -70,7 +69,7 @@ def validate_lost_item_input(data: Dict[str, Any]) -> LostItemInput:
     return LostItemInput(**data)
 
 
-def validate_found_item_input(data: Dict[str, Any]) -> FoundItemInput:
+def validate_found_item_input(data: dict[str, Any]) -> FoundItemInput:
     """Validate input for registering a found item.
 
     Args:
@@ -85,7 +84,7 @@ def validate_found_item_input(data: Dict[str, Any]) -> FoundItemInput:
     return FoundItemInput(**data)
 
 
-def validate_search_matches_input(data: Dict[str, Any]) -> SearchMatchesInput:
+def validate_search_matches_input(data: dict[str, Any]) -> SearchMatchesInput:
     """Validate input for searching matches.
 
     Args:
@@ -100,7 +99,7 @@ def validate_search_matches_input(data: Dict[str, Any]) -> SearchMatchesInput:
     return SearchMatchesInput(**data)
 
 
-def validate_description_fields(description: ItemDescription) -> List[str]:
+def validate_description_fields(description: ItemDescription) -> list[str]:
     """Validate that an ItemDescription has reasonable values.
 
     Args:
@@ -145,7 +144,7 @@ def validate_description_fields(description: ItemDescription) -> List[str]:
     return errors
 
 
-def safe_json_loads(json_string: str) -> Dict[str, Any]:
+def safe_json_loads(json_string: str) -> dict[str, Any]:
     """Safely parse JSON string, returning empty dict on failure.
 
     Args:
@@ -161,7 +160,7 @@ def safe_json_loads(json_string: str) -> Dict[str, Any]:
         return {}
 
 
-def extract_user_text_from_request(request_data: Any) -> Optional[str]:
+def extract_user_text_from_request(request_data: Any) -> str | None:
     """Extract user text from various request formats.
 
     Args:

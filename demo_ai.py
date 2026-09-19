@@ -23,8 +23,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 
 from ai import describe_item, embed, top_k
-from ai.providers.base import VLMProvider, EmbeddingProvider
-
+from ai.providers.base import EmbeddingProvider, VLMProvider
 
 # --- fake providers for --offline ----------------------------------------
 
@@ -124,7 +123,7 @@ def run_demo(offline: bool) -> None:
 
     print(f"Processing LOST items (mode={'offline' if offline else 'online'})...")
     lost = process(lost_dir)
-    print(f"\nProcessing FOUND items...")
+    print("\nProcessing FOUND items...")
     found = process(found_dir)
 
     if not lost or not found:

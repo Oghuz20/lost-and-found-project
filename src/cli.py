@@ -25,6 +25,7 @@ import asyncio
 import sys
 from typing import cast
 
+from dotenv import load_dotenv
 from numpy import ndarray
 
 from ai import describe_item, embed, top_k
@@ -33,8 +34,6 @@ from src.models import Item, ItemStatus
 from src.storage.blob_store import BlobStore, BlobValidationError
 from src.storage.db import get_pool, init_schema
 from src.storage.repository import ItemRepository
-
-from dotenv import load_dotenv
 
 load_dotenv()
 

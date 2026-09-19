@@ -21,16 +21,16 @@ top_k(query_vec, candidates, k=3) -> list[MatchResult]
 ItemDescription, MatchResult — pydantic models defined in ai.schemas.
 """
 
-from ai.schemas import ItemDescription, MatchResult
-from ai.vlm import describe_item
 from ai.embedding import embed
+from ai.schemas import ItemDescription, MatchResult
 from ai.similarity import cosine, top_k
+from ai.vlm import describe_item
 
 __all__ = [
     "ItemDescription",
     "MatchResult",
+    "cosine",
     "describe_item",
     "embed",
-    "cosine",
     "top_k",
 ]

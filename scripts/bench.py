@@ -1,6 +1,5 @@
 import asyncio
 import time
-from typing import List
 
 
 async def fake_processing_task(item_id: int) -> float:
@@ -9,7 +8,7 @@ async def fake_processing_task(item_id: int) -> float:
     return item_id
 
 
-async def run_sequential(items: List[int]) -> float:
+async def run_sequential(items: list[int]) -> float:
     """Последовательная обработка элементов."""
     start_time = time.perf_counter()
     for item in items:
@@ -17,7 +16,7 @@ async def run_sequential(items: List[int]) -> float:
     return time.perf_counter() - start_time
 
 
-async def run_concurrent(items: List[int], max_concurrency: int = 5) -> float:
+async def run_concurrent(items: list[int], max_concurrency: int = 5) -> float:
     """Параллельная обработка через Semaphore."""
     semaphore = asyncio.Semaphore(max_concurrency)
 

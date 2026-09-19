@@ -7,9 +7,9 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from ai.providers.base import ProviderError
 from src.services.ai_service import AIServiceError, describe_item, embed
 from src.services.cache import get_embedding_cache
-from ai.providers.base import ProviderError
 
 
 class TestAIService:

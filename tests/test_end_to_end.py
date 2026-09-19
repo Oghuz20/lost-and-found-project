@@ -6,20 +6,16 @@ matching, using the AI service with caching, retries, and validation.
 
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
-
 import pytest
 
+from ai import top_k
 from src.services.ai_service import describe_item, embed
 from src.services.cache import get_embedding_cache
 from src.validation import (
-    validate_lost_item_input,
+    validate_description_fields,
     validate_found_item_input,
-    validate_description_fields
+    validate_lost_item_input,
 )
-from ai import top_k
-from ai.schemas import ItemDescription
 
 
 class TestEndToEndWorkflow:

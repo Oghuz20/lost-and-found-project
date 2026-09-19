@@ -2,26 +2,24 @@
 
 from __future__ import annotations
 
-import time
 from datetime import datetime, timedelta
 from unittest.mock import Mock, patch
 
-import os
 import pytest
 
 from src.telemetry.cost import (
-    CostTracker,
     CostRecord,
-    record_cost,
+    CostTracker,
     get_cost_report,
-    get_cost_tracker
+    record_cost,
 )
 from src.telemetry.tracing import (
+    is_tracing_enabled,
     trace_ai_call,
     trace_describe_item,
     trace_embed,
-    is_tracing_enabled
 )
+
 
 @pytest.fixture(autouse=True)
 def _no_otlp_endpoint(monkeypatch):
