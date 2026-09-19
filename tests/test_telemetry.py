@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
@@ -86,7 +86,7 @@ class TestCostTracker:
 
         # Record an old record (simulate by manually setting timestamp)
         old_record = CostRecord(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(timezone.utc) - timedelta(days=2),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -100,7 +100,7 @@ class TestCostTracker:
 
         # Record a recent record
         recent_record = CostRecord(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(timezone.utc) - timedelta(hours=1),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -239,7 +239,7 @@ class TestCostTracker:
 
         # Add old and recent records
         old_record = CostRecord(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(timezone.utc) - timedelta(days=2),
             operation="describe_item",
             provider="openai",
             model="gpt-4o",
@@ -252,7 +252,7 @@ class TestCostTracker:
         )
 
         recent_record = CostRecord(
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(timezone.utc) - timedelta(hours=1),
             operation="embed",
             provider="openai",
             model="text-embedding-3-small",
@@ -307,13 +307,13 @@ class TestCostTracker:
 
     def test_get_cost_report_with_data(self):
         """Test getting cost report with sample data."""
-        from datetime import datetime
+        from datetime import datetime, timedelta
 
         with patch('src.telemetry.cost._cost_tracker') as mock_tracker:
             # Mock some records
             mock_records = [
                 CostRecord(
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(timezone.utc) - timedelta(hours=2),
                     operation="describe_item",
                     provider="openai",
                     model="gpt-4o",
@@ -325,7 +325,7 @@ class TestCostTracker:
                     success=True
                 ),
                 CostRecord(
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(timezone.utc) - timedelta(hours=1),
                     operation="embed",
                     provider="openai",
                     model="text-embedding-3-small",
