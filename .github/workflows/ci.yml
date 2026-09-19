@@ -50,6 +50,7 @@ jobs:
       - name: Test (offline AI smoke tests + SE-layer tests, coverage-gated)
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:dev@localhost:5432/lostfound
+          PYTHONPATH: .
         run: pytest --cov=src --cov-fail-under=60 --cov-report=term-missing
 
       - name: Docker build
