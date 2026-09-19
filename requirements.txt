@@ -1,0 +1,20 @@
+# Dependencies for the src/ software-engineering layer.
+# See requirements-ai.txt (provided, do not edit) for the ai/ package's
+# own deps — this file is separate so the two never get confused.
+
+# --- Config & Storage (Person A) -----------------------------------------
+pydantic>=2.7
+pydantic-settings>=2.4
+asyncpg>=0.29
+
+# --- HTTP API & Concurrency (Person B) ------------------------------------
+fastapi>=0.115
+uvicorn[standard]>=0.30
+
+# --- AI wrapping, robustness & telemetry (Person C) -----------------------
+tenacity>=9.0
+opentelemetry-api>=1.27
+opentelemetry-sdk>=1.27
+
+# --- Shared -----------------------------------------------------------------
+numpy>=1.24
