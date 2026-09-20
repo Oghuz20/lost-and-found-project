@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Lost &amp; Found</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>Smart Lost &amp; Found</h1>
+    <p class="subtitle">Register items with a photo, then find semantic matches powered by VLM + embeddings.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab active" data-tab="register">Register</button>
+    <button type="button" class="tab" data-tab="items">Items</button>
+    <button type="button" class="tab" data-tab="matches">Matches</button>
+  </nav>
+
+  <main>
+    <section id="panel-register" class="panel active" aria-labelledby="register">
+      <div class="card-grid">
+        <article class="card">
+          <h2>Register lost item</h2>
+          <form id="form-lost" class="register-form">
+            <label>
+              Photo (JPEG/PNG)
+              <input type="file" name="file" accept="image/jpeg,image/png" required />
+            </label>
+            <label>
+              Description
+              <textarea name="user_text" rows="3" required placeholder="e.g. brown leather wallet lost near the library"></textarea>
+            </label>
+            <button type="submit">Register lost</button>
+          </form>
+          <output id="result-lost" class="form-result" aria-live="polite"></output>
+        </article>
+        <article class="card">
+          <h2>Register found item</h2>
+          <form id="form-found" class="register-form">
+            <label>
+              Photo (JPEG/PNG)
+              <input type="file" name="file" accept="image/jpeg,image/png" required />
+            </label>
+            <label>
+              Description
+              <textarea name="user_text" rows="3" required placeholder="e.g. found wallet near the gym entrance"></textarea>
+            </label>
+            <button type="submit">Register found</button>
+          </form>
+          <output id="result-found" class="form-result" aria-live="polite"></output>
+        </article>
+      </div>
+      <p class="hint">Analyzing a photo usually takes 10–30 seconds while the vision model runs.</p>
+    </section>
+
+    <section id="panel-items" class="panel" hidden>
+      <div class="toolbar">
+        <label>
+          Filter
+          <select id="items-filter">
+            <option value="">All</option>
+            <option value="lost">Lost</option>
+            <option value="found">Found</option>
+          </select>
+        </label>
+        <button type="button" id="refresh-items">Refresh</button>
+      </div>
+      <div id="items-message" class="message" aria-live="polite"></div>
+      <div id="items-table-wrap" class="table-wrap"></div>
+    </section>
+
+    <section id="panel-matches" class="panel" hidden>
+      <form id="form-matches" class="matches-form">
+        <label>
+          Item ID
+          <input type="number" name="item_id" min="1" required />
+        </label>
+        <label>
+          Top K
+          <input type="number" name="k" min="1" max="20" value="5" />
+        </label>
+        <button type="submit">Find matches</button>
+      </form>
+      <div id="matches-message" class="message" aria-live="polite"></div>
+      <div id="matches-results"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <a href="/docs" target="_blank" rel="noopener">OpenAPI docs</a>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

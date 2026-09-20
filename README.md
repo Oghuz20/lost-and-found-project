@@ -135,18 +135,28 @@ Settings → Branches → require status checks).
 ![CI](https://github.com/<org>/<repo>/actions/workflows/ci.yml/badge.svg)
 -->
 
+## Web UI
+
+After the API is running (`docker compose up` or `uvicorn src.api:app --host 0.0.0.0 --port 8000`), open **http://localhost:8000/** in a browser.
+
+The static UI (`static/`) lets you register lost/found items (photo + description), browse items with thumbnails, and run top-K match search without using Swagger. OpenAPI docs remain at **http://localhost:8000/docs**.
+
+Live registration requires valid AI keys and model names in `.env`. For Google Gemini, use a current VLM id (e.g. `gemini-3.6-flash`; older ids such as `gemini-2.0-flash` may return 404) and an embedding model that supports `embedContent` (e.g. `gemini-embedding-001` with `EMBEDDING_PROVIDER=gemini`).
+
 ## HTTP API reference *(Person B)*
 
 The REST API is built using **FastAPI** (`src/api.py`) and exposes endpoints for item registration, retrieval, and similarity matching.
 
 * **`POST /items/lost`**: Register a lost item with image upload and text description.
 * **`POST /items/found`**: Register a found item with image upload and text description.
-* **`GET /items`**: Retrieve registered items (supports optional `status_filter` query parameter: `lost`, `found`, `matched`, `closed`).
-* **`GET /items/{item_id}/matches`**: Retrieve top-K semantic matches for a registered item (supports `k` query parameter, defaults to `5`).
+* **`GET /items`**: Retrieve registered items (supports optional `status` query parameter: `lost`, `found`, …).
+* **`GET /items/{item_id}/matches`**: Retrieve top-K semantic matches for a registered item (supports `k` query parameter, defaults to `3`).
+* **`GET /items/{item_id}/image`**: Stream the stored item photo (for thumbnails in the UI).
 
 You can run the API server locally using `uvicorn`:
 ```bash
 uvicorn src.api:app --host 0.0.0.0 --port 8000 --reload
+```
 
 ## Concurrency benchmark *(Person B)*
 
