@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from src.models import Item, ItemStatus
@@ -46,7 +48,7 @@ class PipelineService:
         else:
             vlm_dict = vlm_desc
 
-        # Создаем Pydantic-модель Item для передачи в Person A repository
+        # Создаем Pydantic-модель Item для передачи в репозиторий
         item_model = Item(
             status=ItemStatus(status),
             user_text=user_text,
@@ -55,7 +57,7 @@ class PipelineService:
             embedding=vector,
         )
 
-        # Сохраняем в базу данных через слой Person A
+        # Сохраняем в базу данных
         saved_item = await self.repository.save_item(item_model)
         return saved_item
 
@@ -69,8 +71,13 @@ class PipelineService:
                 user_text=data.get("user_text", ""),
                 image_path=data["image_path"],
             )
-            # Возвращаем словарь или Pydantic-модель
-            return saved_item.model_dump() if hasattr(saved_item, "model_dump") else saved_item
+            # Возвращаем строго словарь для соответствия сигнатуре Mypy
+            if hasattr(saved_item, "model_dump"):
+                return saved_item.model_dump()
+            elif isinstance(saved_item, dict):
+                return saved_item
+            else:
+                return dict(saved_item.__dict__)
 
         raw_results = await self.batch_runner.run_batch(items_data, _process_one)
 

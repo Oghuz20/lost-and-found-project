@@ -70,7 +70,7 @@ def _initialize_tracer() -> None:
         trace.set_tracer_provider(provider)
         _tracer = trace.get_tracer(__name__)
 
-    except Exception as e:
+    except Exception as e: # noqa: BLE001
         logger.warning("Failed to initialize OpenTelemetry: %s", e)
         _tracer = None
 
@@ -82,7 +82,7 @@ def get_tracer():
     Returns:
         Tracer instance or None if OpenTelemetry is not available
     """
-    global _tracer
+    
     if _tracer is None:
         _initialize_tracer()
     return _tracer
@@ -133,7 +133,7 @@ def trace_ai_call(
             else:
                 span.set_status(Status(StatusCode.ERROR, f"AI call failed: {status}"))
 
-    except Exception as e:
+    except Exception as e: # noqa: BLE001
         logger.warning("Failed to create OpenTelemetry span: %s", e)
 
 

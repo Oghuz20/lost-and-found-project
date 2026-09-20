@@ -102,7 +102,7 @@ def test_cli_main_argparse():
     with (
         patch("sys.argv", test_args),
         patch("src.cli.asyncio.run", side_effect=_close_coro) as mock_run,
-        patch("src.cli._list", new_callable=AsyncMock) as mock_list_fn,
+        patch("src.cli._list", new_callable=AsyncMock) as _mock_list_fn,
     ):
         main()
         mock_run.assert_called_once()

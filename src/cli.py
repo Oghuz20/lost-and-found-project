@@ -71,7 +71,7 @@ async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
     store = BlobStore(settings)
 
     try:
-        with open(image_path, "rb") as fh:
+        with open(image_path, "rb") as fh: # noqa: ASYNC230
             data = fh.read()
     except OSError as exc:
         print(f"error: could not read {image_path!r}: {exc}", file=sys.stderr)
