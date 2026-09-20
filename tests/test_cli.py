@@ -2,10 +2,8 @@
 
 from unittest.mock import AsyncMock, MagicMock, patch
 
-import numpy as np
 import pytest
 
-from ai.vlm import ItemDescription
 from src.cli import _list, _register, _search_matches, main
 from src.models import Item, ItemStatus
 
