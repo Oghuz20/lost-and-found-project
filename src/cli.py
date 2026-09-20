@@ -7,15 +7,6 @@ Run as::
     python -m src.cli list --status lost
     python -m src.cli search-matches --id 1 -k 3
     python -m src.cli cost-report
-
-Integration note
------------------
-`_register` and `_search_matches` currently call `ai.describe_item` /
-`ai.embed` / `ai.top_k` directly so every command is usable end-to-end on
-its own. Once `src/services/ai_service.py` (Person C's retry/timeout/
-logging wrapper) and `src/services/pipeline.py` (Person B's orchestration)
-are both confirmed stable, swap the direct `ai.*` calls below for those
-instead — nothing else in this file should need to change.
 """
 
 from __future__ import annotations
@@ -23,19 +14,25 @@ from __future__ import annotations
 import argparse
 import asyncio
 import sys
-from typing import cast
 
 from dotenv import load_dotenv
-from numpy import ndarray
+from pydantic import ValidationError
 
-from ai import describe_item, embed, top_k
 from src.config import get_settings
-from src.models import Item, ItemStatus
-from src.storage.blob_store import BlobStore, BlobValidationError
+from src.models import ItemStatus
+from src.services.item_flow import (
+    ItemFlowError,
+    ItemNoEmbeddingError,
+    ItemNotFoundError,
+    find_top_matches,
+    register_item_from_file,
+)
+from src.storage.blob_store import BlobValidationError
 from src.storage.db import get_pool, init_schema
 from src.storage.repository import ItemRepository
 
 load_dotenv()
+
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="lost-and-found", description=__doc__)
@@ -66,82 +63,64 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
+async def _get_repo() -> ItemRepository:
     settings = get_settings()
-    store = BlobStore(settings)
-
-    try:
-        with open(image_path, "rb") as fh: # noqa: ASYNC230
-            data = fh.read()
-    except OSError as exc:
-        print(f"error: could not read {image_path!r}: {exc}", file=sys.stderr)
-        raise SystemExit(1)
-
-    try:
-        blob = store.save(data, original_filename=image_path)
-    except BlobValidationError as exc:
-        print(f"error: {exc}", file=sys.stderr)
-        raise SystemExit(1)
-
-    desc = describe_item(str(blob.path), text)
-    vec = embed(desc.to_search_text())
-
     pool = await get_pool(settings)
     await init_schema(pool, settings)
-    repo = ItemRepository(pool)
-    item = Item(
-        status=kind,
-        user_text=text,
-        image_path=str(blob.path),
-        vlm_description=desc.to_dict(),
-        embedding=Item.pack_embedding(vec),
-    )
-    saved = await repo.save_item(item)
-    print(f"registered {kind.value} item #{saved.id}: {desc.object_class} (confidence={desc.confidence:.2f})")
+    return ItemRepository(pool)
+
+
+async def _register(kind: ItemStatus, image_path: str, text: str) -> None:
+    try:
+        repo = await _get_repo()
+        saved = await register_item_from_file(
+            status=kind,
+            image_path=image_path,
+            user_text=text,
+            repo=repo,
+        )
+    except ValidationError as exc:
+        print(f"error: invalid input: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    except BlobValidationError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    except ItemFlowError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+
+    obj = saved.vlm_description.get("object_class", "?")
+    conf = saved.vlm_description.get("confidence", 0.0)
+    print(f"registered {kind.value} item #{saved.id}: {obj} (confidence={conf:.2f})")
 
 
 async def _search_matches(item_id: int, k: int) -> None:
-    settings = get_settings()
-    pool = await get_pool(settings)
-    await init_schema(pool, settings)
-    repo = ItemRepository(pool)
+    repo = await _get_repo()
+    try:
+        query_item, matches = await find_top_matches(item_id=item_id, k=k, repo=repo)
+    except ItemNotFoundError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+    except ItemNoEmbeddingError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
 
-    query_item = await repo.get_item(item_id)
-    if query_item is None:
-        print(f"error: no item with id {item_id}", file=sys.stderr)
-        raise SystemExit(1)
-
-    query_vec = query_item.embedding_array()
-    if query_vec is None:
-        print(f"error: item {item_id} has no stored embedding", file=sys.stderr)
-        raise SystemExit(1)
-
-    opposite_status = ItemStatus.FOUND if query_item.status == ItemStatus.LOST else ItemStatus.LOST
-    candidates = await repo.list_items(opposite_status)
-    if not candidates:
-        print(f"no {opposite_status.value} items to match against")
+    if not matches:
+        opposite = ItemStatus.FOUND if query_item.status == ItemStatus.LOST else ItemStatus.LOST
+        print(f"no {opposite.value} items with embeddings to match against")
         return
-    scored_candidates = [c for c in candidates if c.embedding_array() is not None]
-    if not scored_candidates:
-        print(f"no {opposite_status.value} items with embeddings to match against")
-        return
-
-    cand_vecs = [cast(ndarray, c.embedding_array()) for c in scored_candidates]
-    matches = top_k(query_vec, cand_vecs, k=min(k, len(scored_candidates)))
 
     obj = query_item.vlm_description.get("object_class", "?")
     print(f"top matches for item #{item_id} ({obj}):")
     for m in matches:
-        cand = scored_candidates[m.candidate_id]
-        cand_obj = cand.vlm_description.get("object_class", "?")
-        print(f"  -> #{cand.id:<4} {cand_obj:<20} score={m.score:+.3f}")
+        print(
+            f"  -> #{m['item_id']:<4} {m.get('object_class') or '?':<20} "
+            f"score={m['score']:+.3f}"
+        )
 
 
 async def _list(status: str | None) -> None:
-    settings = get_settings()
-    pool = await get_pool(settings)
-    await init_schema(pool, settings)
-    repo = ItemRepository(pool)
+    repo = await _get_repo()
     items = await repo.list_items(status)
     if not items:
         print("no items found")
@@ -152,11 +131,11 @@ async def _list(status: str | None) -> None:
 
 
 async def _cost_report() -> None:
-    """Generate and display the telemetry cost report."""
     from src.telemetry.cost import get_cost_report
 
     report = get_cost_report(hours=24)
     print(report)
+
 
 def main(argv: list[str] | None = None) -> None:
     parser = _build_parser()
@@ -172,7 +151,7 @@ def main(argv: list[str] | None = None) -> None:
         asyncio.run(_list(args.status))
     elif args.command == "cost-report":
         asyncio.run(_cost_report())
-    else:  # pragma: no cover - argparse enforces `required=True` above
+    else:  # pragma: no cover
         parser.error(f"unknown command: {args.command}")
 
 
